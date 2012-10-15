@@ -68,6 +68,13 @@ public class LanguageParser {
 		return (splitter.hasMoreTokens() ? isValidStatement(splitter) : false);
 	}
 
+	/**
+	 * Checks if the following token(s) represent(s) either an assignment,
+	 * either an if statement.
+	 * 
+	 * @param splitter
+	 * @return
+	 */
 	private static boolean isValidStatement(StringSplitter splitter) {
 
 		String token = splitter.nextToken();
@@ -76,21 +83,21 @@ public class LanguageParser {
 				: isAssignment(token));
 	}
 
+	/**
+	 * Checks if the following tokens represent a valid if statement.
+	 * 
+	 * @param splitter
+	 * @return
+	 */
 	private static boolean isIfStatement(StringSplitter splitter) {
 
 		boolean indeed = isBoolean(splitter.nextToken());
 
 		if (indeed) {
-			indeed = splitter.nextToken().equals("then");
+			indeed = splitter.nextToken().equals("then") && isValidStatement(splitter);
 		}
 		if (indeed) {
-			indeed = isValidStatement(splitter);
-		}
-		if (indeed) {
-			indeed = splitter.nextToken().equals("else");
-		}
-		if (indeed) {
-			indeed = isValidStatement(splitter);
+			indeed = splitter.nextToken().equals("else") && isValidStatement(splitter);
 		}
 		if (indeed) {
 			indeed = splitter.nextToken().equals("end");
