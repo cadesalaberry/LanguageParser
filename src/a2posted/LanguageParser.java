@@ -65,15 +65,10 @@ public class LanguageParser {
 
 	public static boolean parse(StringSplitter splitter) {
 
-		// ADD YOUR CODE HERE
-		if (splitter.hasMoreTokens()) {
-			return isValid(splitter);
-		}
-		return false;
-
+		return (splitter.hasMoreTokens() ? isValidStatement(splitter) : false);
 	}
 
-	private static boolean isValid(StringSplitter splitter) {
+	private static boolean isValidStatement(StringSplitter splitter) {
 
 		String token = splitter.nextToken();
 
@@ -81,26 +76,21 @@ public class LanguageParser {
 				: isAssignment(token));
 	}
 
-	public static boolean isIfStatement(StringSplitter splitter) {
+	private static boolean isIfStatement(StringSplitter splitter) {
 
-		boolean indeed = true;
-		String token = splitter.nextToken();
-		indeed = token.equals("if");
+		boolean indeed = isBoolean(splitter.nextToken());
 
-		if (indeed) {
-			indeed = isBoolean(splitter.nextToken());
-		}
 		if (indeed) {
 			indeed = splitter.nextToken().equals("then");
 		}
 		if (indeed) {
-			indeed = isAssignment(splitter.nextToken());
+			indeed = isValidStatement(splitter);
 		}
 		if (indeed) {
 			indeed = splitter.nextToken().equals("else");
 		}
 		if (indeed) {
-			indeed = isAssignment(splitter.nextToken());
+			indeed = isValidStatement(splitter);
 		}
 		if (indeed) {
 			indeed = splitter.nextToken().equals("end");
