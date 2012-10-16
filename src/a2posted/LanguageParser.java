@@ -65,6 +65,56 @@ public class LanguageParser {
 
 	public static boolean parse(StringSplitter splitter) {
 
+		return noRecursion(splitter);
+
+	}
+
+	public static boolean noRecursion(StringSplitter splitter) {
+
+		return (splitter.hasMoreTokens() ? startStacking(splitter) : false);
+	}
+
+	private static boolean startStacking(StringSplitter splitter) {
+
+		StringStack stack = new StringStack();
+
+		while (splitter.hasMoreTokens()) {
+
+			String token = splitter.nextToken();
+
+			if (token.equals("if")) {
+				
+				token = splitter.nextToken();
+
+				if (isBoolean(token)) {
+					
+					token = splitter.nextToken();
+					
+					if (token.equals("then")){
+						stack.pop();
+						stack.push(splitter.nextToken());
+					}
+					
+				}
+			} else if(token.equals("else")){
+				
+			}
+		}
+		
+		if (isAssignment(stack.peek())) {
+			stack.pop();
+		}
+
+		return stack.isEmpty();
+	}
+
+	private static void replaceLast(StringStack stack, String token) {
+		stack.pop();
+		stack.push(token);
+	}
+
+	public static boolean recursion(StringSplitter splitter) {
+
 		return (splitter.hasMoreTokens() ? isValidStatement(splitter) : false);
 	}
 
@@ -94,10 +144,12 @@ public class LanguageParser {
 		boolean indeed = isBoolean(splitter.nextToken());
 
 		if (indeed) {
-			indeed = splitter.nextToken().equals("then") && isValidStatement(splitter);
+			indeed = splitter.nextToken().equals("then")
+					&& isValidStatement(splitter);
 		}
 		if (indeed) {
-			indeed = splitter.nextToken().equals("else") && isValidStatement(splitter);
+			indeed = splitter.nextToken().equals("else")
+					&& isValidStatement(splitter);
 		}
 		if (indeed) {
 			indeed = splitter.nextToken().equals("end");
