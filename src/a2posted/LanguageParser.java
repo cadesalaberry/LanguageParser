@@ -94,7 +94,9 @@ public class LanguageParser {
 
 		StringStack stack = new StringStack();
 		stack.push(splitter.nextToken());
-
+		while(stack.peek().equals("")){
+			stack.push(splitter.nextToken());
+		}
 		return (stack.peek().equals("if") ? checkIfStatement(splitter, stack)
 				: isAssignment(stack.peek()));
 	}
