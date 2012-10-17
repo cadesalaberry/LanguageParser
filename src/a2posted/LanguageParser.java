@@ -79,35 +79,37 @@ public class LanguageParser {
 
 		return (splitter.hasMoreTokens() ? checkValidity(splitter) : false);
 	}
-	
+
 	/**
-	 * Eliminates the case in which the input is only an assignment.
-	 * The passing of the stack is a bit messy, but it allowed me 
-	 * not checking for "" in the tokens, which can appear randomly.
-	 * It could have been avoided by making the StringSplitter
-	 * returning "\0" instead of "" when empty.
-	 * No modification to StringSplitter were allowed though.
+	 * Eliminates the case in which the input is only an assignment. The passing
+	 * of the stack is a bit messy, but it allowed me not checking for "" in the
+	 * tokens, which can appear randomly. It could have been avoided by making
+	 * the StringSplitter returning "\0" instead of "" when empty. No
+	 * modification to StringSplitter were allowed though.
 	 * 
 	 * @param splitter
 	 * @return
 	 */
 	private static boolean checkValidity(StringSplitter splitter) {
-		
+
 		StringStack stack = new StringStack();
 		stack.push(splitter.nextToken());
 
 		return (stack.peek().equals("if") ? checkIfStatement(splitter, stack)
 				: isAssignment(stack.peek()));
 	}
-	
+
 	/**
-	 * Only focuses on "If Statements" and nested "If Statements".
+	 * Only focuses on "If Statements" and nested "If Statements". Stores every
+	 * tokens in a stack until it reaches an "end". It then matches the "end" to
+	 * the "if", checking if the grammar is correct on the way.
 	 * 
 	 * @param splitter
 	 * @param stack
-	 * @return
+	 * @return 'true' is the syntax correspond to an "If Statement".
 	 */
-	private static boolean checkIfStatement(StringSplitter splitter, StringStack stack) {
+	private static boolean checkIfStatement(StringSplitter splitter,
+			StringStack stack) {
 
 		// Initialises the return value.
 		boolean correct = true;
@@ -125,14 +127,14 @@ public class LanguageParser {
 			if (stack.peek().equals("end")) {
 				stack.pop();
 
-				if (isAssignment(stack.peek()) || wasStatement(stack.peek())) {
+				if (isAssignment(stack.peek()) || wasIfStatement(stack.peek())) {
 					stack.pop();
 
 					if (stack.peek().equals("else")) {
 						stack.pop();
 
 						if (isAssignment(stack.peek())
-								|| wasStatement(stack.peek())) {
+								|| wasIfStatement(stack.peek())) {
 							stack.pop();
 
 							if (stack.peek().equals("then")) {
@@ -141,8 +143,7 @@ public class LanguageParser {
 								if (isBoolean(stack.peek())) {
 									stack.pop();
 
-									if (stack.peek().equals("if")
-											|| stack.peek().equals("")) {
+									if (stack.peek().equals("if")) {
 										stack.pop();
 										stack.push("*#*#7780#*#*");
 									} else
@@ -167,22 +168,21 @@ public class LanguageParser {
 
 	/**
 	 * Checks if the token correspond to an "If Statement" already checked by
-	 * the algorithm.
-	 * The code corresponds to the factory reset combination that has recently
-	 * been exploited as a prank on the web.
-	 * It has been chosen for its less than likely chance to be typed by
-	 * misgard.
+	 * the algorithm. The code corresponds to the factory reset combination that
+	 * has recently been exploited as a prank on the web. It has been chosen for
+	 * its less than likely chance to be typed by misgard.
 	 * 
 	 * @param token
 	 * @return
 	 */
-	private static boolean wasStatement(String token) {
+	private static boolean wasIfStatement(String token) {
 
 		return token.equals("*#*#7780#*#*");
 	}
 
 	/**
-	 * Solve the problem using recursion.
+	 * Solves the problem using recursion. It first checks if the splitter
+	 * contains tokens, returning false otherwise.
 	 * 
 	 * @param splitter
 	 * @return
@@ -208,7 +208,8 @@ public class LanguageParser {
 	}
 
 	/**
-	 * Checks if the following tokens represent a valid if statement.
+	 * Checks if the following tokens represent a valid if statement,
+	 * Thus if every tokens are in order.
 	 * 
 	 * @param splitter
 	 * @return
