@@ -69,50 +69,124 @@ public class LanguageParser {
 
 	}
 
+	/**
+	 * Checks the validity of the text without using recursion.
+	 * 
+	 * @param splitter
+	 * @return
+	 */
 	public static boolean noRecursion(StringSplitter splitter) {
 
-		return (splitter.hasMoreTokens() ? startStacking(splitter) : false);
+		return (splitter.hasMoreTokens() ? checkValidity(splitter) : false);
 	}
-
-	private static boolean startStacking(StringSplitter splitter) {
-
+	
+	/**
+	 * Eliminates the case in which the input is only an assignment.
+	 * The passing of the stack is a bit messy, but it allowed me 
+	 * not checking for "" in the tokens, which can appear randomly.
+	 * It could have been avoided by making the StringSplitter
+	 * returning "\0" instead of "" when empty.
+	 * No modification to StringSplitter were allowed though.
+	 * 
+	 * @param splitter
+	 * @return
+	 */
+	private static boolean checkValidity(StringSplitter splitter) {
+		
 		StringStack stack = new StringStack();
+		stack.push(splitter.nextToken());
 
+		return (stack.peek().equals("if") ? checkIfStatement(splitter, stack)
+				: isAssignment(stack.peek()));
+	}
+	
+	/**
+	 * Only focuses on "If Statements" and nested "If Statements".
+	 * 
+	 * @param splitter
+	 * @param stack
+	 * @return
+	 */
+	private static boolean checkIfStatement(StringSplitter splitter, StringStack stack) {
+
+		// Initialises the return value.
+		boolean correct = true;
+
+		// Works on the splitter until it is empty.
 		while (splitter.hasMoreTokens()) {
 
-			String token = splitter.nextToken();
-
-			if (token.equals("if")) {
-				
-				token = splitter.nextToken();
-
-				if (isBoolean(token)) {
-					
-					token = splitter.nextToken();
-					
-					if (token.equals("then")){
-						stack.pop();
-						stack.push(splitter.nextToken());
-					}
-					
-				}
-			} else if(token.equals("else")){
-				
+			// Stacks splitter's tokens until it meets an "end".
+			while (!stack.peek().equals("end")) {
+				stack.push(splitter.nextToken());
 			}
-		}
-		
-		if (isAssignment(stack.peek())) {
-			stack.pop();
+
+			// Goes down the stack to find the matching if pattern.
+			// (From bottom to top though)
+			if (stack.peek().equals("end")) {
+				stack.pop();
+
+				if (isAssignment(stack.peek()) || wasStatement(stack.peek())) {
+					stack.pop();
+
+					if (stack.peek().equals("else")) {
+						stack.pop();
+
+						if (isAssignment(stack.peek())
+								|| wasStatement(stack.peek())) {
+							stack.pop();
+
+							if (stack.peek().equals("then")) {
+								stack.pop();
+
+								if (isBoolean(stack.peek())) {
+									stack.pop();
+
+									if (stack.peek().equals("if")
+											|| stack.peek().equals("")) {
+										stack.pop();
+										stack.push("*#*#7780#*#*");
+									} else
+										correct = false;
+								} else
+									correct = false;
+							} else
+								correct = false;
+						} else
+							correct = false;
+					} else
+						correct = false;
+				} else
+					correct = false;
+			} else
+				correct = false;
 		}
 
-		return stack.isEmpty();
+		// Once the splitter is empty, returns result.
+		return correct;
 	}
 
-	private static void replaceLast(StringStack stack, String token) {
-		stack.pop();
-		stack.push(token);
+	/**
+	 * Checks if the token correspond to an "If Statement" already checked by
+	 * the algorithm.
+	 * The code corresponds to the factory reset combination that has recently
+	 * been exploited as a prank on the web.
+	 * It has been chosen for its less than likely chance to be typed by
+	 * misgard.
+	 * 
+	 * @param token
+	 * @return
+	 */
+	private static boolean wasStatement(String token) {
+
+		return token.equals("*#*#7780#*#*");
 	}
 
+	/**
+	 * Solve the problem using recursion.
+	 * 
+	 * @param splitter
+	 * @return
+	 */
 	public static boolean recursion(StringSplitter splitter) {
 
 		return (splitter.hasMoreTokens() ? isValidStatement(splitter) : false);
