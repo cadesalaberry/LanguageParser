@@ -1,13 +1,7 @@
-# COMP 250 Assignment 2
+LanguageParser
+==============
 
-Instructor: Prof. Michael Langer
-Posted: Tues, Oct. 9, 2012
-
-### General Instructions
-
-The same instructions apply as in Assignment 1.
-
-## Question 1 (50 points) Due: Sun, Oct. 21, 2012 at 23:59
+## Question 1 (50 points)
 
 ### Introduction
 
